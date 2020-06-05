@@ -21,4 +21,4 @@ def lemmatize(word_list):
 
 
 def tokenize(text):
-    return lemmatize(remove_stopwords(remove_punctuation(word_tokenize(text.strip().lower()))))
+    return lemmatize(remove_stopwords(word_tokenize(remove_punctuation(text.lower()))))
