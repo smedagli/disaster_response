@@ -6,11 +6,11 @@ def has_need(x): return 'need' in x
 
 class TextExtractor(BaseEstimator, TransformerMixin):
     def __init__(self, word_to_find):
-        self.word = word_to_find
+        self.word = word_to_find.lower()
     def fit(self, X, y=None):
         return self
     def transform(self, X):
-        return pd.DataFrame(list(map(lambda x: self.word in x, X)))
+        return pd.DataFrame(list(map(lambda x: self.word in x.lower(), X)))
 
 #
 # class HelpExtractor(BaseEstimator, TransformerMixin):

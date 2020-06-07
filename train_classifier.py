@@ -3,8 +3,10 @@ import pandas as pd
 pd.options.display.max_columns = 25
 pd.options.display.width = 2500
 import paths
-from language.custom_extractor import TextExtractor, #  HelpExtractor, NeedExtractor
-
+from language.custom_extractor import TextExtractor#, HelpExtractor, NeedExtractor
+import os
+import pickle
+import matplotlib.pyplot as plt
 
 from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.model_selection import train_test_split, GridSearchCV
@@ -18,6 +20,8 @@ def read_data():
     df = pd.read_sql('SELECT * FROM table1', con=engine)
     return df
 
+
+def accuracy(pred, y): return (pred == y).mean()
 
 
 
@@ -40,7 +44,15 @@ p3 = Pipeline([
     ('help', TextExtractor('need'))
     ])
 
-pipeline = Pipeline([
+p4 = Pipeline([
+    ('sos', TextExtractor('sos'))
+])
+
+p5 = Pipeline([
+    ('please', TextExtractor('please'))
+])
+
+mid_pipeline = Pipeline([
     ('features', FeatureUnion([
         ('nlp_pipeline', p1),
         ('help_find', p2),
@@ -48,8 +60,23 @@ pipeline = Pipeline([
     ])),
 ('clf', MultiOutputClassifier(estimator=RandomForestClassifier())),
 ])
-pipeline.fit(X_train[: 20], Y_train[: 20])
 
+simple_pipeline = Pipeline([
+            ('vect', CountVectorizer()),
+            ('tfidf', TfidfTransformer()),
+            ('clf', MultiOutputClassifier(estimator=RandomForestClassifier())),
+])
+
+pipeline = Pipeline([
+    ('features', FeatureUnion([
+        ('nlp_pipeline', p1),
+        ('help_find', p2),
+        ('need_find', p3),
+        ('sos_find', p4),
+        ('pease_find', p5),
+    ])),
+('clf', MultiOutputClassifier(estimator=RandomForestClassifier())),
+])
 
 if not os.path.exists('p2.pkl'):
     print("Training second pipeline")
@@ -79,6 +106,7 @@ pred_test = pipeline.predict(X_test)
 simple_pred_test = simple_pipeline.predict(X_test)
 mid_pred_test = mid_pipeline.predict(X_test)
 
+# accuracies
 acc_tr = accuracy(pred_traininig, Y_train)
 mid_ac_tr = accuracy(mid_pred_training, Y_train)
 simple_acc_tr = accuracy(simple_pred_training, Y_train)
@@ -88,11 +116,27 @@ simple_acc_tst = accuracy(simple_pred_test, Y_test)
 mid_acc_tst = accuracy(mid_pred_test, Y_test)
 
 plt.figure()
+plt.subplot(411)
+plt.plot(acc_tr, '-o', color='blue', )
+plt.plot(acc_tst, ':o', color='blue')
+plt.grid(True)
+plt.xticks(rotation='45');
+plt.subplot(412)
+plt.plot(simple_acc_tr, '-o', color='red')
+plt.plot(simple_acc_tst, ':o', color='red')
+plt.grid(True)
+plt.xticks(rotation='45');
+plt.subplot(413)
+plt.plot(mid_ac_tr, '-o', color='green')
+plt.plot(mid_acc_tst, ':o', color='green')
+plt.grid(True)
+plt.xticks(rotation='45');
+plt.subplot(414)
 plt.plot(acc_tr, '-o', color='blue', )
 plt.plot(acc_tst, ':o', color='blue')
 plt.plot(simple_acc_tr, '-o', color='red')
 plt.plot(simple_acc_tst, ':o', color='red')
 plt.plot(mid_ac_tr, '-o', color='green')
 plt.plot(mid_acc_tst, ':o', color='green')
-plt.xticks(rotation='45')
-
+plt.grid(True)
+plt.xticks(rotation='45');
