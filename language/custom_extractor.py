@@ -12,21 +12,12 @@ class TextExtractor(BaseEstimator, TransformerMixin):
     def transform(self, X):
         return pd.DataFrame(list(map(lambda x: self.word in x.lower(), X)))
 
-#
-# class HelpExtractor(BaseEstimator, TransformerMixin):
-#     """ Returns true when 'help' in in the text """
-#     def __init__(self):
-#         pass
-#     def fit(self, X, y=None):
-#         return self
-#     def transform(self, X):
-#         return pd.DataFrame(list(map(has_help, X)))
-#
-# class NeedExtractor(BaseEstimator, TransformerMixin):
-#     """ Returns true when 'need' in in the text """
-#     def __init__(self):
-#         pass
-#     def fit(self, X, y=None):
-#         return self
-#     def transform(self, X):
-#         return pd.DataFrame(list(map(has_need, X)))
+
+class LenExtractor(BaseEstimator, TransformerMixin):
+    def __init__(self, word_to_find):
+        self.word = word_to_find.lower()
+    def fit(self, X, y=None):
+        return self
+    def transform(self, X):
+        return pd.DataFrame(list(map(lambda x: len(x), X)))
+
