@@ -9,14 +9,12 @@ See Also:
     data/process_data_script.py
 """
 
-import pandas as pd
 import sys
+import os
+import pandas as pd
 from sqlalchemy import create_engine
 
 from disaster_response import paths
-
-pd.options.display.max_columns = 25
-pd.options.display.width = 2500
 
 
 def main(messages_path=paths.messages_path,
@@ -47,6 +45,7 @@ def main(messages_path=paths.messages_path,
     df.drop_duplicates(inplace=True)
 
     if write:
+        print(f"Writing data in {os.path.abspath(sql_path)}")
         engine = create_engine(f'sqlite:///{sql_path}')
         df.to_sql('table1', engine, index=False, if_exists='replace')
     return df
