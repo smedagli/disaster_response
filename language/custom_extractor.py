@@ -18,8 +18,8 @@ class TextExtractor(BaseEstimator, TransformerMixin):
 
 class LenExtractor(BaseEstimator, TransformerMixin):
     """    Returns the length of the message    """
-    def __init__(self, word_to_find):
-        self.word = word_to_find.lower()
+    def __init__(self):
+        pass
     def fit(self, X, y=None):
         return self
     def transform(self, X):
