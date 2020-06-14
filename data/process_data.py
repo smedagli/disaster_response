@@ -1,9 +1,12 @@
 """
 13/06/2020
-Preprocess the data. Run the script as
+Preprocessing of the data. Run the script as
 ```python data/process_data.py <messages_csv_path> <categories_csv_path> <database_db_path>```
 
 will import messages and categories from the 2 .csv files, merge them and save into the .db file
+
+See Also:
+    data/process_data_script.py
 """
 
 import pandas as pd
