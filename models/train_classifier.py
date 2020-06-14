@@ -135,16 +135,18 @@ def export_model(model, pickle_file=paths.model_pickle_file) -> None:
     pickle.dump(model, open(output_file, "wb"))
 
 
-def main(database_file=paths.sql_path, pickle_file=paths.model_pickle_file) -> None:
+def main(database_file=paths.sql_path, pickle_file=paths.model_pickle_file, write=True) -> None:
     """ Load the data, builds and trains the model and then save it
     Args:
         database_file: database with messages and categories (to load)
         pickle_file: pickle file to store the model (to write)
+        write: if True, saves the model in the .pkl file
     """
     X, Y = load_data(database_file)
     model = build_model()
     train(X, Y, model)
-    export_model(model, pickle_file)
+    if write:
+        export_model(model, pickle_file)
 
 
 if __name__ == '__main__':
