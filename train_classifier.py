@@ -1,10 +1,20 @@
+"""
+This module loads the messages and labels from the .db file and trains a model for text prediction.
+The model is specified in function `build_model()`
+To run the model type in command line:
+`python train_classifier.py <.db file> <.pkl file>`
+Examples:
+    <.db file>: file to load messages and categories
+    <.pkl file>: file to save the model
+See Also:
+    train_classifier_script.py
+"""
 from sqlalchemy import create_engine
 import pandas as pd
-pd.options.display.max_columns = 25
-pd.options.display.width = 2500
+import sys
 import os
+import re
 import pickle
-import matplotlib.pyplot as plt
 
 from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.model_selection import train_test_split, GridSearchCV
@@ -56,13 +66,21 @@ def build_model(verbose=10) -> GridSearchCV:
             ('sos', TextExtractor(word_to_find='sos')),
             ('please', TextExtractor(word_to_find='please')),
             ('text_len', LenExtractor()),
-        ])),
-        ('clf', MultiOutputClassifier(estimator=RandomForestClassifier())),
+        ], n_jobs=-1),
+         ),
+        ('model', MultiOutputClassifier(estimator=RandomForestClassifier(verbose=verbose))),
     ])
-    # define parameters for GridSearchCV
-    parameters = {}
-    # create gridsearch object and return as final model pipeline
-    model_pipeline = GridSearchCV(pipeline, param_grid=parameters, verbose=verbose)
+    # # define parameters for GridSearchCV
+    # parameters = {'model__estimator__n_estimators': [2, 4],
+    #               'features__nlp_pipeline__tfidf__use_idf': (True, False),
+    #               'features__help__word_to_find': ['help'],
+    #               'features__need__word_to_find': ['need'],
+    #               'features__sos__word_to_find': ['sos'],
+    #               'features__please__word_to_find': ['please'],
+    #               }
+    # # create gridsearch object and return as final model pipeline
+    # model_pipeline = GridSearchCV(pipeline, param_grid=parameters, verbose=verbose)
+    model_pipeline = pipeline
     return model_pipeline
 
 
@@ -79,6 +97,7 @@ def train(X, y, model, verbose=True):
     # train test split
     X_train, X_test, Y_train, Y_test = train_test_split(X, y)
     # fit model
+    print("Start training")
     model.fit(X_train, Y_train)
     # output model test results
     if verbose:
@@ -91,7 +110,7 @@ def train(X, y, model, verbose=True):
         print('Model accuracy')
         print('--------------')
         print(f"Training accuracy:\t {acc_training.mean():3.3f}")
-        print(f"Test accuracy:\t {acc_test.mean():3.3f}")
+        print(f"Test accuracy:\t\t {acc_test.mean():3.3f}")
     return model
 
 
@@ -103,125 +122,34 @@ def export_model(model, pickle_file=paths.model_pickle_file) -> None:
         pickle_file: .pkl output file
     """
     # Export model as a pickle file
-    pickle.dump(model, open(pickle_file, "wb"))
+    if os.path.exists(pickle_file):
+        file_num = re.findall(r'(\d)', pickle_file)
+        if len(file_num) == 0:
+            output_file = pickle_file.replace('.pkl', '(1).pkl')
+        else:
+            file_num = int(file_num[0])
+            output_file = pickle_file.replace('.pkl', f'({file_num + 1}).pkl')
+    else:
+        output_file = pickle_file
+    print(f"Saving model in {os.path.abspath(output_file)}")
+    pickle.dump(model, open(output_file, "wb"))
 
-if __name__ == '__main__':
-    X, Y = load_data()
+
+def main(database_file=paths.sql_path, pickle_file=paths.model_pickle_file) -> None:
+    """ Load the data, builds and trains the model and then save it
+    Args:
+        database_file: database with messages and categories (to load)
+        pickle_file: pickle file to store the model (to write)
+    """
+    X, Y = load_data(database_file)
     model = build_model()
     train(X, Y, model)
+    export_model(model, pickle_file)
 
-#
-#
-# def main():
-#     df = load_data()
-#     categ_col = [column for column in df.columns if column not in ['message', 'id', 'original', 'genre']]
-#
-#     X = df['message']
-#     Y = df[categ_col]
-#
-#     X_train, X_test, Y_train, Y_test = train_test_split(X, Y)
-#
-#
-# p2 = Pipeline([
-#     ('help', TextExtractor('help'))
-#     ])
-# p3 = Pipeline([
-#     ('help', TextExtractor('need'))
-#     ])
-#
-# p4 = Pipeline([
-#     ('sos', TextExtractor('sos'))
-# ])
-#
-# p5 = Pipeline([
-#     ('please', TextExtractor('please'))
-# ])
-#
-# mid_pipeline = Pipeline([
-#     ('features', FeatureUnion([
-#         ('nlp_pipeline', p1),
-#         ('help_find', p2),
-#         ('need_find', p3),
-#     ])),
-# ('clf', MultiOutputClassifier(estimator=RandomForestClassifier())),
-# ])
-#
-# simple_pipeline = Pipeline([
-#             ('vect', CountVectorizer()),
-#             ('tfidf', TfidfTransformer()),
-#             ('clf', MultiOutputClassifier(estimator=RandomForestClassifier())),
-# ])
-#
-# pipeline = Pipeline([
-#     ('features', FeatureUnion([
-#         ('nlp_pipeline', p1),
-#         ('help_find', p2),
-#         ('need_find', p3),
-#         ('sos_find', p4),
-#         ('pease_find', p5),
-#     ])),
-# ('clf', MultiOutputClassifier(estimator=RandomForestClassifier())),
-# ])
-#
-# if not os.path.exists('p2.pkl'):
-#     print("Training second pipeline")
-#     simple_pipeline.fit(X_train, Y_train)
-#     pickle.dump(simple_pipeline, open("p2.pkl", "wb"))
-# else:
-#     simple_pipeline = pickle.load(open('p2.pkl', 'rb'))
-# if not os.path.exists('p1.pkl'):
-#     print("Training first pipeline")
-#     pipeline.fit(X_train, Y_train)
-#     pickle.dump(pipeline, open("p1.pkl", "wb"))
-# else:
-#     pipeline = pickle.load(open('p1.pkl', 'rb'))
-# if not os.path.exists('p3.pkl'):
-#     print("Training third pipeline")
-#     mid_pipeline.fit(X_train, Y_train)
-#     pickle.dump(mid_pipeline, open("p3.pkl", 'wb'))
-# else:
-#     mid_pipeline = pickle.load(open('p3.pkl', 'rb'))
-#
-# print("Predictions")
-# simple_pred_training = simple_pipeline.predict(X_train)
-# pred_traininig = pipeline.predict(X_train)
-# mid_pred_training = mid_pipeline.predict(X_train)
-#
-# pred_test = pipeline.predict(X_test)
-# simple_pred_test = simple_pipeline.predict(X_test)
-# mid_pred_test = mid_pipeline.predict(X_test)
-#
-# # accuracies
-# acc_tr = accuracy(pred_traininig, Y_train)
-# mid_ac_tr = accuracy(mid_pred_training, Y_train)
-# simple_acc_tr = accuracy(simple_pred_training, Y_train)
-#
-# acc_tst = accuracy(pred_test, Y_test)
-# simple_acc_tst = accuracy(simple_pred_test, Y_test)
-# mid_acc_tst = accuracy(mid_pred_test, Y_test)
-#
-# plt.figure()
-# plt.subplot(411)
-# plt.plot(acc_tr, '-o', color='blue', )
-# plt.plot(acc_tst, ':o', color='blue')
-# plt.grid(True)
-# plt.xticks(rotation='45');
-# plt.subplot(412)
-# plt.plot(simple_acc_tr, '-o', color='red')
-# plt.plot(simple_acc_tst, ':o', color='red')
-# plt.grid(True)
-# plt.xticks(rotation='45');
-# plt.subplot(413)
-# plt.plot(mid_ac_tr, '-o', color='green')
-# plt.plot(mid_acc_tst, ':o', color='green')
-# plt.grid(True)
-# plt.xticks(rotation='45');
-# plt.subplot(414)
-# plt.plot(acc_tr, '-o', color='blue', )
-# plt.plot(acc_tst, ':o', color='blue')
-# plt.plot(simple_acc_tr, '-o', color='red')
-# plt.plot(simple_acc_tst, ':o', color='red')
-# plt.plot(mid_ac_tr, '-o', color='green')
-# plt.plot(mid_acc_tst, ':o', color='green')
-# plt.grid(True)
-# plt.xticks(rotation='45');
+
+if __name__ == '__main__':
+    if len(sys.argv) == 3:
+        database_file, pickle_file = sys.argv[1 :]
+        main(database_file, pickle_file)
+    else:
+        print("Please specify the database path and the output path")
