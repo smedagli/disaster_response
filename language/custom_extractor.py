@@ -1,10 +1,13 @@
+"""
+This module defines some transformer to extract features from a text message
+"""
+
 from sklearn.base import BaseEstimator, TransformerMixin
 import pandas as pd
 
-def has_help(x): return 'help' in x
-def has_need(x): return 'need' in x
 
 class TextExtractor(BaseEstimator, TransformerMixin):
+    """    Returns True if `word_to_find` is in the message    """
     def __init__(self, word_to_find):
         self.word = word_to_find.lower()
     def fit(self, X, y=None):
@@ -14,6 +17,7 @@ class TextExtractor(BaseEstimator, TransformerMixin):
 
 
 class LenExtractor(BaseEstimator, TransformerMixin):
+    """    Returns the length of the message    """
     def __init__(self, word_to_find):
         self.word = word_to_find.lower()
     def fit(self, X, y=None):
