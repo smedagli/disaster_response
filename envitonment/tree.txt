@@ -1,0 +1,53 @@
+Folder PATH listing for volume Boot
+Volume serial number is DC44-7F00
+C:.
+|   .gitignore
+|   paths.py
+|   README.md
+|   __init__.py
+|   
++---.idea
+|   |   .gitignore
+|   |   disaster_response.iml
+|   |   misc.xml
+|   |   modules.xml
+|   |   vcs.xml
+|   |   workspace.xml
+|   |   
+|   \---inspectionProfiles
+|           profiles_settings.xml
+|           
++---data
+|   |   categories.csv
+|   |   messages.csv
+|   |   messages.db
+|   |   process_data.py
+|   |   process_data_script.py
+|   |   __init__.py
+|   |   
+|   \---__pycache__
+|           process_data.cpython-37.pyc
+|           __init__.cpython-37.pyc
+|           
++---envitonment
+|       pkg.txt
+|       tree.txt
+|       
++---language
+|   |   custom_extractor.py
+|   |   nltk_functions.py
+|   |   __init__.py
+|   |   
+|   \---__pycache__
+|           custom_extractor.cpython-37.pyc
+|           __init__.cpython-37.pyc
+|           
++---models
+|       model.pkl
+|       train_classifier.py
+|       train_classifier_script.py
+|       
+\---__pycache__
+        paths.cpython-37.pyc
+        __init__.cpython-37.pyc
+        
