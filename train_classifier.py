@@ -2,8 +2,6 @@ from sqlalchemy import create_engine
 import pandas as pd
 pd.options.display.max_columns = 25
 pd.options.display.width = 2500
-import paths
-from language.custom_extractor import TextExtractor#, HelpExtractor, NeedExtractor
 import os
 import pickle
 import matplotlib.pyplot as plt
@@ -15,23 +13,90 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.multioutput import MultiOutputClassifier
 
 
-def read_data():
-    engine = create_engine(f'sqlite:///{paths.sql_path}')
-    df = pd.read_sql('SELECT * FROM table1', con=engine)
-    return df
+from disaster_response.language.custom_extractor import TextExtractor, LenExtractor
+from disaster_response import paths
 
 
 def accuracy(pred, y): return (pred == y).mean()
 
 
+def _read_data(data_file=paths.sql_path) -> pd.DataFrame:
+    """    Loads the data from a .db file    """
+    engine = create_engine(f'sqlite:///{data_file}')
+    df = pd.read_sql('SELECT * FROM table1', con=engine)
+    return df
 
-df = read_data()
-categ_col = [column for column in df.columns if column not in ['message', 'id', 'original', 'genre']]
+def load_data(data_file=paths.sql_path) -> (pd.Series, pd.DataFrame):
+    """    Reads a .db file and returns messages and their labels    """
+    df = _read_data(data_file)
+    categ_col = [column for column in df.columns if column not in ['message', 'id', 'original', 'genre']]
+    X = df['message']
+    Y = df[categ_col]
+    return X, Y
 
-X = df['message']
-Y = df[categ_col]
 
-X_train, X_test, Y_train, Y_test = train_test_split(X, Y)
+def build_model():
+    # text processing and model pipeline
+
+
+    # define parameters for GridSearchCV
+
+
+    # create gridsearch object and return as final model pipeline
+
+
+    return model_pipeline
+
+
+def train(X, y, model, verbose=True):
+    """
+    Args:
+        X: messages
+        y: labels
+        model: model to train
+        verbose: if True, will print model performance on training and test set
+    Returns:
+        model trained
+    """
+    # train test split
+    X_train, X_test, Y_train, Y_test = train_test_split(X, y)
+    # fit model
+    model.fit(X_train, Y_train)
+    # output model test results
+    if verbose:
+        print("Evaluating performance")
+        pred_training = model.predict(X_train)
+        acc_training = accuracy(pred_training, Y_train)
+
+        pred_test = model.predict(X_test)
+        acc_test = accuracy(pred_test, Y_test)
+        print('Model accuracy')
+        print('--------------')
+        print(f"Training accuracy:\t {acc_training.mean():3.3f}")
+        print(f"Test accuracy:\t {acc_test.mean():3.3f}")
+    return model
+
+
+def export_model(model, pickle_file=paths.model_pickle_file) -> None:
+    """ Saves the model as a pickle file
+    Args:
+        model: model to save as .pkl
+        pickle_file: .pkl output file
+        pickle_file: .pkl output file
+    """
+    # Export model as a pickle file
+    pickle.dump(model, open(pickle_file, "wb"))
+
+
+
+def main():
+    df = load_data()
+    categ_col = [column for column in df.columns if column not in ['message', 'id', 'original', 'genre']]
+
+    X = df['message']
+    Y = df[categ_col]
+
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y)
 
 p1 = Pipeline([
             ('vect', CountVectorizer()),
