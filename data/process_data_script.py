@@ -26,4 +26,4 @@ if __name__ == '__main__':
                       )
 
     args = parser.parse_args()
-    main(args.messages, args.categories, args.output)
+    main(messages_path=args.messages, category_path=args.categories, sql_path=args.output)

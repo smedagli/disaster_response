@@ -8,7 +8,7 @@ import pandas as pd
 
 class TextExtractor(BaseEstimator, TransformerMixin):
     """    Returns True if `word_to_find` is in the message    """
-    def __init__(self, word_to_find):
+    def __init__(self, word_to_find: str):
         self.word = word_to_find.lower()
     def fit(self, X, y=None):
         return self
