@@ -10,7 +10,7 @@ import pandas as pd
 import sys
 from sqlalchemy import create_engine
 
-import paths
+from disaster_response import paths
 
 pd.options.display.max_columns = 25
 pd.options.display.width = 2500
@@ -50,7 +50,8 @@ def main(messages_path=paths.messages_path,
 
 
 if __name__ == '__main__':
-    messages = sys.argv[1]
-    categories = sys.argv[2]
-    db_file = sys.argv[3]
-    main(messages, categories, db_file)
+    if len(sys.argv) == 4:
+        messages, categories, db_file = sys.argv[1 :]
+        main(messages, categories, db_file)
+    else:
+        print("Please specify message .csv file, categories .csv file and output .db file")
