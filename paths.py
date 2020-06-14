@@ -1,4 +1,6 @@
-import os
+"""
+This module defines the default paths of the project
+"""
 
 categories_path = 'data/categories.csv'
 messages_path = 'data/messages.csv'
