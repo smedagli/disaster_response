@@ -13,15 +13,15 @@ from disaster_response.data.process_data import main
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-m', '--messages',
-                      help=f'path of the .csv file containing the messages (default {paths.messages_path}',
+                      help=f'path of the .csv file containing the messages (default {paths.messages_path})',
                       default=paths.messages_path,
                       )
     parser.add_argument('-c', '--categories',
-                      help=f'path of the .csv file containing the categories (default {paths.categories_path}',
+                      help=f'path of the .csv file containing the categories (default {paths.categories_path})',
                       default=paths.categories_path,
                       )
     parser.add_argument('-o', '--output',
-                      help=f'path of the .db output file (default {paths.sql_path}',
+                      help=f'path of the .db output file (default {paths.sql_path})',
                       default=paths.sql_path,
                       )
 
