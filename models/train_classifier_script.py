@@ -1,11 +1,11 @@
 import argparse
 
 from disaster_response import paths
-from models.train_classifier import main
+from disaster_response.models.train_classifier import main
 
 if __name__ == '__main__':
     parser=  argparse.ArgumentParser()
-    parser.add_argument('-db', 'SQL_file',
+    parser.add_argument('-db', '--SQL_file',
                         help=f'path of the .db file containing messages and categories (default {paths.sql_path}',
                         default=paths.sql_path,
                         )
