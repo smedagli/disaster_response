@@ -54,7 +54,7 @@ def build_model(verbose=10) -> GridSearchCV:
     """
     # text processing and model pipeline
     base_pipeline = Pipeline([
-        ('vect', CountVectorizer()),
+        ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
     ])
 
