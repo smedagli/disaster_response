@@ -1,10 +1,13 @@
 import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
-nltk.download('stopwords')
-nltk.download('punkt')
-nltk.download("wordnet")
 import re
+
+
+def download_ntlk_packages():
+    nltk.download('stopwords')
+    nltk.download('punkt')
+    nltk.download("wordnet")
 
 
 def remove_punctuation(sentence: str): return re.sub(r'[^a-zA-Z0-9 ]', '', sentence)
