@@ -169,14 +169,14 @@ def main(database_file=paths.sql_path, pickle_file=paths.model_pickle_file, writ
         export_model(model, pickle_file)
 
 
-if __name__ == "__main__":
-    X, Y = load_data(paths.sql_path)
-    model = build_model()
-    train(X, Y, model)
-#
-# if __name__ == '__main__':
-#     if len(sys.argv) == 3:
-#         database_file, pickle_file = sys.argv[1 :]
-#         main(database_file, pickle_file)
-#     else:
-#         print("Please specify the database path and the output path")
+# if __name__ == "__main__":
+    # X, Y = load_data(paths.sql_path)
+    # model = build_model()
+    # train(X, Y, model)
+
+if __name__ == '__main__':
+    if len(sys.argv) == 3:
+        database_file, pickle_file = sys.argv[1 :]
+        main(database_file, pickle_file)
+    else:
+        print("Please specify the database path and the output path")
