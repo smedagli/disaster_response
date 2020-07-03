@@ -7,8 +7,8 @@ See Also:
 """
 import argparse
 
-from disaster_response import paths
-from disaster_response.data.process_data import main
+import paths
+from data.process_data import main
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

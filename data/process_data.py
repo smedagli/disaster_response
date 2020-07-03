@@ -14,7 +14,7 @@ import os
 import pandas as pd
 from sqlalchemy import create_engine
 
-from disaster_response import paths
+import paths
 
 
 def main(messages_path=paths.messages_path,

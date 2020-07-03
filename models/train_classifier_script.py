@@ -1,7 +1,7 @@
 import argparse
 
-from disaster_response import paths
-from disaster_response.models.train_classifier import main
+import paths
+from models.train_classifier import main
 
 if __name__ == '__main__':
     parser=  argparse.ArgumentParser()

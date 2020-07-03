@@ -22,9 +22,9 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.multioutput import MultiOutputClassifier
 
-
-from disaster_response.language.custom_extractor import TextExtractor, LenExtractor
-from disaster_response import paths
+from language.custom_extractor import TextExtractor, LenExtractor
+import paths
+from language.nltk_functions import tokenize
 
 
 def accuracy(pred, y): return (pred == y).mean()
@@ -107,10 +107,8 @@ def train(X, y, model, verbose=True):
         acc_test = _get_performance(model, X_test, Y_test)
         print('Model accuracy')
         print('--------------')
-        # print(f"Training accuracy:\t {acc_training.mean():3.3f}")
         print("Training accuracy")
         _print_performance(acc_training, verbosity='all')
-        # print(f"Test accuracy:\t\t {acc_test.mean():3.3f}")
         print("Test accuracy")
         _print_performance(acc_test, verbosity='all')
     return model
