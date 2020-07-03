@@ -80,7 +80,7 @@ def build_model(verbose=10) -> GridSearchCV:
                   # 'features__please__word_to_find': ['please'],
                   }
     # create gridsearch object and return as final model pipeline
-    model_pipeline = GridSearchCV(pipeline, param_grid=parameters, verbose=verbose)
+    model_pipeline = GridSearchCV(pipeline, param_grid=parameters, verbose=verbose, n_jobs=-1)
     # model_pipeline = pipeline
     return model_pipeline
 
