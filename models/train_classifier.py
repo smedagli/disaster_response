@@ -114,6 +114,17 @@ def train(X, y, model, verbose=True):
     return model
 
 
+def get_performance(model, X, Y):
+    pred = model.predict(X)
+    return accuracy(pred, Y)
+
+
+def print_performance(model, X, Y):
+    acc = get_performance(model, X, Y)
+    print(acc.T)
+
+
+
 def export_model(model, pickle_file=paths.model_pickle_file) -> None:
     """ Saves the model as a pickle file
     Args:
