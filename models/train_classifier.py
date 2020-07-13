@@ -62,25 +62,25 @@ def build_model(verbose=10) -> GridSearchCV:
         ('features', FeatureUnion([
             ('nlp_pipeline', base_pipeline),
             ('help', TextExtractor(word_to_find='help')),
-            ('need', TextExtractor(word_to_find='need')),
-            ('sos', TextExtractor(word_to_find='sos')),
-            ('please', TextExtractor(word_to_find='please')),
+            # ('need', TextExtractor(word_to_find='need')),
+            # ('sos', TextExtractor(word_to_find='sos')),
+            # ('please', TextExtractor(word_to_find='please')),
             ('text_len', LenExtractor()),
         ], n_jobs=-1),
          ),
         ('model', MultiOutputClassifier(estimator=RandomForestClassifier(verbose=verbose))),
     ])
-    # # define parameters for GridSearchCV
-    # parameters = {'model__estimator__n_estimators': [2, 4],
-    #               'features__nlp_pipeline__tfidf__use_idf': (True, False),
-    #               'features__help__word_to_find': ['help'],
-    #               'features__need__word_to_find': ['need'],
-    #               'features__sos__word_to_find': ['sos'],
-    #               'features__please__word_to_find': ['please'],
-    #               }
-    # # create gridsearch object and return as final model pipeline
-    # model_pipeline = GridSearchCV(pipeline, param_grid=parameters, verbose=verbose)
-    model_pipeline = pipeline
+    # define parameters for GridSearchCV
+    parameters = {'model__estimator__n_estimators': [4, 2],
+                  'features__nlp_pipeline__tfidf__use_idf': (True, False),
+                  # 'features__help__word_to_find': ['help', None],
+                  # 'features__need__word_to_find': ['need', None],
+                  # 'features__sos__word_to_find': ['sos', None],
+                  # 'features__please__word_to_find': ['please', None],
+                  }
+    # create gridsearch object and return as final model pipeline
+    model_pipeline = GridSearchCV(pipeline, param_grid=parameters, verbose=verbose)
+    # model_pipeline = pipeline
     return model_pipeline
 
 
