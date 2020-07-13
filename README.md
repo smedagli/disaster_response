@@ -72,6 +72,10 @@ For more information run the script with `-h` option.
 ### components
 * *paths.py*:
 the module defines the default paths of the project
+
+#### app
+* *run.py*:
+run this script to get the web app for classification (will use 'localhost')
 #### data
 * *process_data.py*:
 reads from the .csv files for messages and categories and writes a .db file
