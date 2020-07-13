@@ -22,9 +22,9 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.multioutput import MultiOutputClassifier
 
-from language.custom_extractor import TextExtractor, LenExtractor
-import paths
-from language.nltk_functions import tokenize
+from disaster_response.language.custom_extractor import TextExtractor, LenExtractor
+from disaster_response import paths
+from disaster_response.language.nltk_functions import tokenize
 
 
 def accuracy(pred, y): return (pred == y).mean()
