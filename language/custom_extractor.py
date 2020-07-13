@@ -9,11 +9,17 @@ import pandas as pd
 class TextExtractor(BaseEstimator, TransformerMixin):
     """    Returns True if `word_to_find` is in the message    """
     def __init__(self, word_to_find: str):
-        self.word = word_to_find.lower()
+        if word_to_find is None:
+            self.word = None
+        else:
+            self.word = word_to_find.lower()
     def fit(self, X, y=None):
         return self
     def transform(self, X):
-        return pd.DataFrame(list(map(lambda x: self.word in x.lower(), X)))
+        if self.word is None:
+            return None
+        else:
+            return pd.DataFrame(list(map(lambda x: self.word in x.lower(), X)))
 
 
 class LenExtractor(BaseEstimator, TransformerMixin):
