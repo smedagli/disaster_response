@@ -40,8 +40,10 @@ conda create --name disaster --file disaster_response/environment/pkg.txt
 |           
 +---models
 |       (model.pkl)
+|       metrics.py
 |       train_classifier.py
 |       train_classifier_script.py
+|       __init__.py
 |       
 ```
 ## pre-processing data
@@ -87,6 +89,8 @@ defines custom transformer classes for text analysis
 * *nltk_functions.py*:
 contains common/quick functions for natural language processing 
 #### models
+* *metrics.py*:
+contains methods to compute and print model's performance
 * *train_classifier.py*:
 defines the model and trains it. Then saves the model as .pkl file
 * *train_classifier_script.py*:
