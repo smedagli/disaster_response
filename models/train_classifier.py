@@ -25,10 +25,7 @@ from sklearn.multioutput import MultiOutputClassifier
 from disaster_response.language.custom_extractor import TextExtractor, LenExtractor
 from disaster_response import paths
 from disaster_response.language.nltk_functions import tokenize
-
-
-def accuracy(pred, y): return (pred == y).mean()
-
+from disaster_response.models import metrics
 
 def _read_data(data_file=paths.sql_path) -> pd.DataFrame:
     """    Loads the data from a .db file    """
@@ -104,34 +101,20 @@ def train(X, y, model, verbose=True):
     # output model test results
     if verbose:
         print("Evaluating performance")
-        acc_training = _get_performance(model, X_train, Y_train)
-        acc_test = _get_performance(model, X_test, Y_test)
+        # acc_training = metrics._get_performance(model, X_train, Y_train)
+        # acc_test = metrics._get_performance(model, X_test, Y_test)
+        perf_training = metrics._get_full_performance_df(model, X_train, Y_train)
+        perf_test = metrics._get_full_performance_df(model, X_test, Y_test)
         print('Model accuracy')
         print('--------------')
         print("Training accuracy")
-        _print_performance(acc_training, verbosity='all')
+        # metrics._print_performance(acc_training, verbosity='all')
+        metrics._print_full_performance(perf_training, verbosity='all')
         print("Test accuracy")
-        _print_performance(acc_test, verbosity='all')
+        # metrics._print_performance(acc_test, verbosity='all')
+        metrics._print_full_performance(perf_test, verbosity='all')
     return model
 
-
-
-def _get_performance(model, X, Y):
-    """ Returns the accuracy of the model """
-    pred = model.predict(X)
-    return accuracy(pred, Y)
-
-
-def _print_performance(accuracy: pd.Series, verbosity='mean') -> None:
-    """ Prints the accuracy value(s)
-    Args:
-        accuracy: accuracy of the predictor as a Series
-        verbosity: if 'mean' will print only the mean value, otherwise, will print to screen each label's accuracy
-    """
-    if verbosity == 'mean':
-        print("{:3.3f}".format(accuracy.mean()))
-    else:
-        print(accuracy.round(3))
 
 
 def export_model(model, pickle_file=paths.model_pickle_file) -> None:
@@ -169,10 +152,6 @@ def main(database_file=paths.sql_path, pickle_file=paths.model_pickle_file, writ
         export_model(model, pickle_file)
 
 
-# if __name__ == "__main__":
-    # X, Y = load_data(paths.sql_path)
-    # model = build_model()
-    # train(X, Y, model)
 
 if __name__ == '__main__':
     if len(sys.argv) == 3:
