@@ -5,7 +5,8 @@ import pandas as pd
 
 from flask import Flask
 from flask import render_template, request, jsonify
-from plotly.graph_objs import Bar
+from plotly import graph_objs as go
+from plotly.graph_objs import Bar, scatter
 from sklearn.externals import joblib
 from sqlalchemy import create_engine
 
@@ -18,7 +19,14 @@ app = Flask(__name__)
 # load data
 engine = create_engine('sqlite:///data/messages.db')
 df = pd.read_sql_table('table1', engine)
-
+cat_columns = ['related', 'request', 'offer', 'aid_related', 'medical_help', 'medical_products', 'search_and_rescue',
+               'security', 'military', 'child_alone', 'water', 'food', 'shelter', 'clothing', 'money', 'missing_people',
+               'refugees', 'death', 'other_aid', 'infrastructure_related', 'transport', 'buildings', 'electricity',
+               'tools', 'hospitals', 'shops', 'aid_centers', 'other_infrastructure', 'weather_related', 'floods',
+               'storm', 'fire', 'earthquake', 'cold', 'other_weather', 'direct_report',
+               ]
+df = df.astype({cc: int for cc in cat_columns})
+df['length'] = df.message.apply(lambda x: len(x))
 # load model
 model = joblib.load("models/model.pkl")
 
@@ -32,17 +40,22 @@ def index():
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
 
+    df_cat = df.groupby('genre').sum()[cat_columns].copy()
+    df_cat.reset_index(drop=False, inplace=True)
+
+    d_temp = df_cat.melt('genre')
+    d = d_temp.groupby('variable').sum()
+    d.sort_values(by='value', ascending=False, inplace=True)
+
+    categories = list(d.index)
     # create visuals
     # TODO: Below is an example - modify to create your own visuals
-    graphs = [
-        {
-            'data': [
+    g1 = {'data': [
                 Bar(
                     x=genre_names,
-                    y=genre_counts
-                )
-            ],
-
+                    y=genre_counts,
+                    ),
+                ],
             'layout': {
                 'title': 'Distribution of Message Genres',
                 'yaxis': {
@@ -53,7 +66,44 @@ def index():
                 }
             }
         }
-    ]
+    ###
+    g2 = {'data': [Bar(y=d.value,
+                      x=categories,
+                       ),
+                   ],
+          'layout': {'title': 'Categories',
+                     'xaxis': {'title': 'Category'},
+                     'yaxis': {'title': 'Count'}
+          }
+    }
+    ###
+    gs = []
+    for g, dplot in d_temp.groupby('genre'):
+        print(g)
+        sorted_dplot = dplot.set_index('variable').T[categories].T.reset_index(drop=False)
+        y = sorted_dplot.value
+        
+        temp_g = {'data':
+            Bar(
+                x=categories,
+                y=y,
+                name=g,
+            ),
+            # 'layout': {'title': g},
+        }
+        gs.append(temp_g)
+    gg = {'data': [gg['data'] for gg in gs],
+          'layout': {'title': 'Categories for each genre',
+                     'xaxis': {'title': 'Category'},
+                     'yaxis': {'title': 'Count'},
+                     },
+          }
+    ###
+
+    graphs = [g1,
+              g2,
+              gg
+              ]
 
     # encode plotly graphs in JSON
     ids = ["graph-{}".format(i) for i, _ in enumerate(graphs)]
